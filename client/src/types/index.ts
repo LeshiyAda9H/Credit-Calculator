@@ -2,6 +2,7 @@ export interface CreditInput {
   income: number; // Доход
   creditHistory: 'poor' | 'average' | 'good'; // Кредитная история
   debtLoad: number; // Долговая нагрузка
+  age: number; // Возраст
 }
 
 export interface CreditOutput {

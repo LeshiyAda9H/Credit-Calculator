@@ -11,6 +11,7 @@ const initialState: CreditState = {
     income: 0,
     creditHistory: 'average',
     debtLoad: 0,
+    age: 18,
   },
   output: null,
 };
