@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { Typography, Divider } from '@mui/material';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Typography, Divider, Tabs, Tab, Box, Fade } from '@mui/material';
+import { MonetizationOn, AccountBalance, Person, TrendingDown, TrendingUp, Timeline, } from '@mui/icons-material';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { calculateCredit } from '../fuzzyLogic/fuzzySystem';
 
 // Генерация данных для графика зависимости вероятности от дохода
@@ -123,11 +125,13 @@ const calculateContributions = (input: { income: number; debtLoad: number; credi
 
 
 const CreditResult = () => {
+
   const { input, output } = useSelector((state: RootState) => state.credit);
+  const [activeTab, setActiveTab] = useState(0);
 
   if (!output) {
     return (
-      <Typography variant='h6' style={{ display: 'grid', placeItems: 'center', margin: '230px auto' }}>
+      <Typography variant='h6' sx={{ textAlign: 'center', mt: 10 }}>
         Введите данные для расчёта
       </Typography>
     );
@@ -141,116 +145,155 @@ const CreditResult = () => {
   const ageMembershipData = generateAgeMembershipData();
   const contributions = calculateContributions(input);
 
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <Typography variant="h4">Результаты:</Typography>
 
-      <div>
-        <Typography>Вероятность одобрения: {output.approvalProbability}%</Typography>
-        <Typography>Рекомендуемая сумма: {output.recommendedAmount} руб.</Typography>
-      </div>
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue)
+  };
+
+  return (
+    <Box style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+
+      <Typography variant="h4">Результаты:</Typography>
 
       <Divider />
 
-      <div>
+      <Box>
+        <Typography>Вероятность одобрения: {output.approvalProbability}%</Typography>
+        <Typography>Рекомендуемая сумма: {output.recommendedAmount} руб.</Typography>
+      </Box>
+
+      <Divider />
+
+      <Box>
         <Typography variant="subtitle1">Вклад переменных в результат:</Typography>
         <Typography>Доход: {contributions.income.toFixed(1)}%</Typography>
         <Typography>Долговая нагрузка: {contributions.debtLoad.toFixed(1)}%</Typography>
         <Typography>Кредитная история: {contributions.creditHistory.toFixed(1)}%</Typography>
         <Typography>Возраст: {contributions.age.toFixed(1)}%</Typography>
-      </div>
+      </Box>
 
       <Divider />
 
-      <div>
-        <Typography variant="subtitle1">Зависимость вероятности одобрения от дохода:</Typography>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={incomeGraphData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="income" tickFormatter={(value) => `${value / 1000}k`} />
-            <YAxis domain={[0, 100]} />
-            <Tooltip formatter={(value) => `${value}%`} labelFormatter={(value) => `Доход: ${value}`} />
-            <Line type="monotone" dataKey="probability" stroke="#8884d8" dot={false} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      <Tabs
+        value={activeTab}
+        onChange={handleTabChange}
+        aria-label="Переключение графиков"
+        variant="scrollable"
+        scrollButtons="auto"
+        sx={{ borderBottom: 1, borderColor: 'divider' }}
+      >
+        <Tab icon={<MonetizationOn />} label="Доход" />
+        <Tab icon={<AccountBalance />} label="Долг" />
+        <Tab icon={<Person />} label="Возраст" />
+        <Tab icon={<TrendingDown />} label="Ф. дохода" />
+        <Tab icon={<TrendingUp />} label="Ф. долга" />
+        <Tab icon={<Timeline />} label="Ф. возраста" />
+      </Tabs>
 
-      <div>
-        <Typography variant="subtitle1">Зависимость вероятности одобрения от долговой нагрузки:</Typography>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={debtLoadGraphData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="debtLoad" tickFormatter={(value) => `${value / 1000}k`} />
-            <YAxis domain={[0, 100]} />
-            <Tooltip formatter={(value) => `${value}%`} labelFormatter={(value) => `Долг: ${value}`} />
-            <Line type="monotone" dataKey="probability" stroke="#82ca9d" dot={false} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div>
-        <Typography variant="subtitle1">Зависимость вероятности одобрения от возраста:</Typography>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={ageGraphData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="age" />
-            <YAxis domain={[0, 100]} />
-            <Tooltip formatter={(value) => `${value}%`} labelFormatter={(value) => `Возраст: ${value}`} />
-            <Line type="monotone" dataKey="probability" stroke="#ffc107" dot={false} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
-      <Divider />
-
-      <div>
-        <Typography variant="subtitle1">Функции принадлежности для дохода:</Typography>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={incomeMembershipData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="income" tickFormatter={(value) => `${value / 1000}k`} />
-            <YAxis domain={[0, 1]} />
-            <Tooltip />
-            <Line type="monotone" dataKey="veryLow" stroke="#ff7300" dot={false} />
-            <Line type="monotone" dataKey="low" stroke="#387908" dot={false} />
-            <Line type="monotone" dataKey="medium" stroke="#8884d8" dot={false} />
-            <Line type="monotone" dataKey="high" stroke="#82ca9d" dot={false} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div>
-        <Typography variant="subtitle1">Функции принадлежности для долговой нагрузки:</Typography>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={debtLoadMembershipData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="debtLoad" tickFormatter={(value) => `${value / 1000}k`} />
-            <YAxis domain={[0, 1]} />
-            <Tooltip />
-            <Line type="monotone" dataKey="veryLow" stroke="#ff7300" dot={false} />
-            <Line type="monotone" dataKey="low" stroke="#387908" dot={false} />
-            <Line type="monotone" dataKey="medium" stroke="#8884d8" dot={false} />
-            <Line type="monotone" dataKey="high" stroke="#82ca9d" dot={false} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div>
-        <Typography variant="subtitle1">Функции принадлежности для возраста:</Typography>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={ageMembershipData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="age" />
-            <YAxis domain={[0, 1]} />
-            <Tooltip />
-            <Line type="monotone" dataKey="veryLow" stroke="#ff7300" dot={false} />
-            <Line type="monotone" dataKey="low" stroke="#387908" dot={false} />
-            <Line type="monotone" dataKey="medium" stroke="#8884d8" dot={false} />
-            <Line type="monotone" dataKey="high" stroke="#82ca9d" dot={false} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
+      <Fade in={true} timeout={500}>
+        <Box sx={{ mt: 2 }}>
+          {activeTab === 0 && (
+            <div>
+              <Typography variant="subtitle1">Зависимость вероятности одобрения от дохода:</Typography>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={incomeGraphData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="income" tickFormatter={(value) => `${value / 1000}k`} />
+                  <YAxis domain={[0, 100]} />
+                  <Tooltip formatter={(value) => `${value}%`} labelFormatter={(value) => `Доход: ${value}`} />
+                  <Legend />
+                  <Line type="monotone" dataKey="probability" name="Вероятность" stroke="#8884d8" dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+          {activeTab === 1 && (
+            <div>
+              <Typography variant="subtitle1">Зависимость вероятности одобрения от долговой нагрузки:</Typography>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={debtLoadGraphData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="debtLoad" tickFormatter={(value) => `${value / 1000}k`} />
+                  <YAxis domain={[0, 100]} />
+                  <Tooltip formatter={(value) => `${value}%`} labelFormatter={(value) => `Долг: ${value}`} />
+                  <Legend />
+                  <Line type="monotone" dataKey="probability" name="Вероятность" stroke="#82ca9d" dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+          {activeTab === 2 && (
+            <div>
+              <Typography variant="subtitle1">Зависимость вероятности одобрения от возраста:</Typography>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={ageGraphData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="age" />
+                  <YAxis domain={[0, 100]} />
+                  <Tooltip formatter={(value) => `${value}%`} labelFormatter={(value) => `Возраст: ${value}`} />
+                  <Legend />
+                  <Line type="monotone" dataKey="probability" name="Вероятность" stroke="#ffc107" dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+          {activeTab === 3 && (
+            <div>
+              <Typography variant="subtitle1">Функции принадлежности для дохода:</Typography>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={incomeMembershipData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="income" tickFormatter={(value) => `${value / 1000}k`} />
+                  <YAxis domain={[0, 1]} />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="veryLow" name="Очень низкий" stroke="#ff7300" dot={false} />
+                  <Line type="monotone" dataKey="low" name="Низкий" stroke="#387908" dot={false} />
+                  <Line type="monotone" dataKey="medium" name="Средний" stroke="#8884d8" dot={false} />
+                  <Line type="monotone" dataKey="high" name="Высокий" stroke="#82ca9d" dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+          {activeTab === 4 && (
+            <div>
+              <Typography variant="subtitle1">Функции принадлежности для долговой нагрузки:</Typography>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={debtLoadMembershipData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="debtLoad" tickFormatter={(value) => `${value / 1000}k`} />
+                  <YAxis domain={[0, 1]} />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="veryLow" name="Очень низкий" stroke="#ff7300" dot={false} />
+                  <Line type="monotone" dataKey="low" name="Низкий" stroke="#387908" dot={false} />
+                  <Line type="monotone" dataKey="medium" name="Средний" stroke="#8884d8" dot={false} />
+                  <Line type="monotone" dataKey="high" name="Высокий" stroke="#82ca9d" dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+          {activeTab === 5 && (
+            <div>
+              <Typography variant="subtitle1">Функции принадлежности для возраста:</Typography>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={ageMembershipData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="age" />
+                  <YAxis domain={[0, 1]} />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="veryLow" name="Очень низкий" stroke="#ff7300" dot={false} />
+                  <Line type="monotone" dataKey="low" name="Низкий" stroke="#387908" dot={false} />
+                  <Line type="monotone" dataKey="medium" name="Средний" stroke="#8884d8" dot={false} />
+                  <Line type="monotone" dataKey="high" name="Высокий" stroke="#82ca9d" dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </Box>
+      </Fade>
+    </Box>
   );
 };
 

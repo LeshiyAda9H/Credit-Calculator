@@ -1,4 +1,4 @@
-import { TextField, Select, MenuItem, Button, Typography, Slider } from '@mui/material';
+import { TextField, Select, MenuItem, Typography, Slider, Divider } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { setOutput, updateInput } from '../store/slices/creditSlice';
@@ -17,12 +17,6 @@ const CreditForm = () => {
     }
   }, [input, dispatch]);
 
-  // Обновляем результаты при изменении входных данных (кнопка)
-  const handleSubmit = () => {
-    const output = calculateCredit(input);
-    dispatch(setOutput(output));
-  };
-
   return (
     <div
       style={{
@@ -35,6 +29,9 @@ const CreditForm = () => {
       <Typography variant="h4">
         Кредитный калькулятор
       </Typography>
+
+      <Divider />
+
       {/* Доход (руб.) */}
       <div>
         <Typography>Доход (руб.)</Typography>
@@ -55,6 +52,8 @@ const CreditForm = () => {
           valueLabelDisplay='auto'
         />
       </div>
+
+      <Divider />
 
       {/* Кредитная история */}
       <div>
@@ -112,10 +111,6 @@ const CreditForm = () => {
         />
         
       </div>
-      
-      <Button variant="contained" onClick={handleSubmit}>
-        Рассчитать
-      </Button>
     </div>
   );
 };
