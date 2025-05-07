@@ -2,7 +2,7 @@ import { Provider } from 'react-redux';
 import store from './store';
 import CreditForm from './components/CreditForm';
 import CreditResult from './components/CreditResult';
-import { Container, Grid, Box, ThemeProvider, Paper } from '@mui/material';
+import { Container, Box, ThemeProvider, Paper } from '@mui/material';
 import theme from './theme';
 
 export default function App() {
@@ -10,33 +10,50 @@ export default function App() {
     <Provider store={store}>
       <ThemeProvider theme={theme}>
 
-        <Container maxWidth="xl" disableGutters sx={{ backgroundColor: '#f5f5f5', p: 3, borderRadius: 2 }}>
-          {/* <Box sx={{ my: 4 }}>
+        {/* Основной Box на экране*/}
+        <Box
+          sx={{
+            minHeight: '100vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
 
-            <Grid container spacing={4}>
+          {/* Формат заполнения контейнера */}
+          <Container
+            maxWidth="xl"
+            disableGutters
+            sx={{
+              backgroundColor: '#f5f5f5',
+              p: { xs: 2, sm: 2 },
+              borderRadius: 2,
+              boxShadow: 3,
+            }}>
 
-              <Grid item xs={12} md={4}>
-                <Paper elevation={3}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', md: 'row' },
+                gap: 2
+              }}>
+
+              <Box sx={{ flex: { md: 1 } }}>
+                <Paper elevation={3} sx={{ p: 2 }}>
                   <CreditForm />
                 </Paper>
-              </Grid>
+              </Box>
 
-              <Grid item xs={12} md={8}>
-                <Paper elevation={3}>
+              <Box sx={{ flex: { md: 2 } }}>
+                <Paper >
                   <CreditResult />
                 </Paper>
-              </Grid>
-              
-            </Grid>
+              </Box>
 
-          </Box> */}
+            </Box>
 
-          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2 }}>
-            <Box sx={{ flex: { md: 1 } }}><Paper><CreditForm /></Paper></Box>
-            <Box sx={{ flex: { md: 2 } }}><Paper><CreditResult /></Paper></Box>
-          </Box>
-          
-        </Container>
+          </Container>
+        </Box>
+
       </ThemeProvider>
 
     </Provider>

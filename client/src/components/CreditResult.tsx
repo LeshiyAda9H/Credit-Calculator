@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { Typography, Divider, Tabs, Tab, Box, Fade } from '@mui/material';
-import { MonetizationOn, AccountBalance, Person, TrendingDown, TrendingUp, Timeline, } from '@mui/icons-material';
+import { MonetizationOn, AccountBalance, Person, TrendingUp, TrendingDown, Timeline, } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { calculateCredit } from '../fuzzyLogic/fuzzySystem';
 
@@ -185,8 +185,8 @@ const CreditResult = () => {
         <Tab icon={<MonetizationOn />} label="Доход" />
         <Tab icon={<AccountBalance />} label="Долг" />
         <Tab icon={<Person />} label="Возраст" />
-        <Tab icon={<TrendingDown />} label="Ф. дохода" />
-        <Tab icon={<TrendingUp />} label="Ф. долга" />
+        <Tab icon={<TrendingUp />} label="Ф. дохода" />
+        <Tab icon={<TrendingDown />} label="Ф. долга" />
         <Tab icon={<Timeline />} label="Ф. возраста" />
       </Tabs>
 
