@@ -49,26 +49,43 @@
 - **Тестирование**: Jest (для логики)
 - **Стили**: Material-UI Theme, sx-пропсы
 
-## Структура проекта
+## Основная структура проекта
 ```
-credit-calculator/
-├── public/                 # Статические файлы
-├── src/
-│   ├── components/         # React-компоненты
-│   │   ├── CreditForm.tsx  # Форма ввода данных
-│   │   └── CreditResult.tsx # Отображение результатов и графиков
-│   ├── fuzzyLogic/         # Логика нечётких вычислений
-│   │   ├── fuzzySystem.ts  # Основная логика
-│   │   ├── fuzzyRules.ts  # Все правила
-│   │   └── fuzzySystem.test.ts # Тесты
-│   ├── store/              # Redux store
-│   │   ├── slices/         # Слайсы Redux
-│   │   └── index.ts        # Конфигурация store
-│   ├── theme.ts            # Глобальная тема Material-UI
-│   ├── App.tsx             # Главный компонент
-│   └── index.tsx           # Точка входа
-├── package.json            # Зависимости и скрипты
-└── README.md               # Документация
+├── client/
+│   ├── src/
+│   │   ├── App.tsx                 # Главный компонент
+│   │   ├── components/             # React-компоненты
+│   │   │   ├── CreditForm.tsx      # Форма ввода данных
+│   │   │   ├── CreditResult.tsx    # Отображение результатов и графиков
+│   │   ├── fuzzyLogic/             # Логика нечётких вычислений
+│   │   │   ├── fuzzyRules.ts       # Все правила
+│   │   │   ├── fuzzySystem.test.ts # Тесты
+│   │   │   ├── fuzzySystem.ts      # Основная логика
+│   │   ├── index.css
+│   │   ├── main.tsx                # Точка входа
+│   │   ├── services/
+│   │   ├── store/                  # Redux store
+│   │   │   ├── index.ts            # Конфигурация store
+│   │   │   ├── slices/             # Слайсы Redux
+│   │   │   │   ├── creditSlice.ts
+│   │   ├── theme.ts                # Глобальная тема Material-UI
+│   │   ├── types/                  
+│   │   │   ├── index.ts            # Интерфейсы
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   ├── vite.config.ts
+│   ├── .eslintrc.json
+│   ├── .gitignore
+│   ├── .prettierrc
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── jest.config.cjs
+│   ├── package-lock.json
+│   ├── package.json                # Зависимости и скрипты
+│   ├── README.md 
+├── README.md                       # Документация
+
 ```
 
 ## Установка
@@ -165,5 +182,8 @@ credit-calculator/
 3. Настроить Docker для контейнеризации.
 4. Добавить локализацию (например, английский язык).
 
+## Скриншот
+![screenshot](assets/screenshot.png)
+
 ---
-Создано с использованием React, Material-UI и нечёткой логики.
+Создано с использованием React, TypeScript, Material-UI и нечёткой логики.
