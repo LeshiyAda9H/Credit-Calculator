@@ -33,22 +33,28 @@ const ageMembership = (age: number) => ({
   veryHigh: Math.max(0, Math.min(1, (age - 60) / 10)), // От 60
 });
 
-
 export const calculateCredit = (input: CreditInput): CreditOutput => {
-
   const income = incomeMembership(input.income);
   const debtLoad = debtLoadMembership(input.debtLoad);
   const creditHistory = creditHistoryMembership(input.creditHistory);
   const age = ageMembership(input.age);
 
   const { probability } = evaluateRules(income, debtLoad, creditHistory, age);
-  
-  const ageFactor = input.age < 30 ? 0.8 : input.age > 60 ? 0.7 : 1;
 
-  const recommendedAmount = input.income * (probability / 100) * 0.6 * ageFactor;
+  // Расчёт факторов для рекомендуемой суммы
+  const debtFactor = 1 - input.debtLoad / (input.income || 1); // Уменьшение при высокой долговой нагрузке
+  const ageFactor = input.age < 30 ? 0.8 : input.age > 60 ? 0.7 : 1; // Учёт возраста
+  const historyFactor = input.creditHistory === 'good' ? 1 : input.creditHistory === 'average' ? 0.8 : 0.5; // Учёт кредитной истории
+  const scalingFactor = probability >= 80 ? 6 : probability >= 50 ? 5 : 3; // Динамический масштаб
+
+  let recommendedAmount = input.income * (probability / 100) * scalingFactor * debtFactor * ageFactor * historyFactor;
+
+  // Округление до ближайших 10,000 и ограничение диапазона
+  recommendedAmount = Math.round(recommendedAmount / 10000) * 10000;
+  recommendedAmount = Math.max(0, Math.min(recommendedAmount, 1000000)); // Ограничение: 0–1,000,000 руб.
 
   return {
     approvalProbability: Math.round(probability),
-    recommendedAmount: Math.round(recommendedAmount),
+    recommendedAmount,
   };
 };

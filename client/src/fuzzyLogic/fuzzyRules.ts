@@ -7,7 +7,7 @@ interface Rule {
   debtLoad: keyof FuzzySet;
   creditHistory: keyof CreditHistorySet;
   age: keyof FuzzySet;
-  output: 'veryLow' | 'low' | 'medium' | 'high' | 'veryHigh';
+  output: 'low' | 'medium' | 'high';
   weight: number;
 }
 
@@ -33,21 +33,15 @@ const generateRules = (): Rule[] => {
           let output: Rule['output'];
           let weight: number;
 
-          if (totalScore >= 9) {
-            output = 'veryHigh';
-            weight = 0.95 - (10 - totalScore) * 0.05;
-          } else if (totalScore >= 7) {
+          if (totalScore >= 7) {
             output = 'high';
-            weight = 0.85 - (8 - totalScore) * 0.05;
+            weight = 0.9 - (8 - totalScore) * 0.05;
           } else if (totalScore >= 4) {
             output = 'medium';
             weight = 0.6 - (6 - totalScore) * 0.05;
-          } else if (totalScore >= 2) {
-            output = 'low';
-            weight = 0.3 - (3 - totalScore) * 0.05;
           } else {
-            output = 'veryLow';
-            weight = 0.15 - (1 - totalScore) * 0.05;
+            output = 'low';
+            weight = 0.3 - (4 - totalScore) * 0.05;
           }
 
           rules.push({
@@ -77,11 +71,9 @@ export const evaluateRules = (
   age: FuzzySet
 ): { probability: number; weights: Record<string, number> } => {
   const outputWeights: Record<string, number> = {
-    veryLow: 0,
     low: 0,
     medium: 0,
     high: 0,
-    veryHigh: 0,
   };
 
   // Фильтруем ненулевые термы
@@ -111,12 +103,8 @@ export const evaluateRules = (
 
   // Дефаззификация
   const probability =
-    (outputWeights.veryLow * 10 +
-      outputWeights.low * 30 +
-      outputWeights.medium * 50 +
-      outputWeights.high * 80 +
-      outputWeights.veryHigh * 95) /
-    (outputWeights.veryLow + outputWeights.low + outputWeights.medium + outputWeights.high + outputWeights.veryHigh || 1);
+    (outputWeights.low * 20 + outputWeights.medium * 50 + outputWeights.high * 90) /
+    (outputWeights.low + outputWeights.medium + outputWeights.high || 1);
 
   return { probability, weights: outputWeights };
 };
